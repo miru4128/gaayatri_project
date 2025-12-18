@@ -1,0 +1,13 @@
+Django>=4.2
+python-dotenv
+groq          # (install name depends on actual package; ensure you pip install the Groq SDK)
+requests       # used by chatbot view to call external APIs
+sentence-transformers>=2.2.2
+torch               # sentence-transformers backend (use CPU wheel for deployment unless GPU available)
+django-ipware       # reliable client IP detection
+# For streaming / channels:
+channels>=4.0
+channels_redis      # if you use Redis channel layer
+
+# Optional: if you prefer to use Groq's Python SDK, install it (name may vary)
+# pip install groq

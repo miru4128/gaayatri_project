@@ -1,0 +1,20 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2 class="mb-4">Doctor Dashboard</h2>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card p-4 bg-white shadow-sm h-100">
+            <h4>📩 My Inbox</h4>
+            <p>View messages from farmers requesting help.</p>
+            <a href="{% url 'inbox' %}" class="btn btn-gaayatri">View Messages</a>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-4 bg-white shadow-sm h-100">
+            <h4>🐄 Farmer Conversations</h4>
+            <p>Review GAAYATRI's chat history including farmer context and cattle details.</p>
+            <a href="{% url 'doctor_chat_history' %}" class="btn btn-gaayatri">Open Chat History</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

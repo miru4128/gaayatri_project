@@ -1,0 +1,17 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2 class="mb-4">My Conversations</h2>
+<div class="list-group shadow-sm">
+    {% for contact in contacts %}
+    <a href="{% url 'chat_view' contact.id %}" class="list-group-item list-group-item-action p-3 d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="mb-1">{{ contact.username }}</h5>
+            <small class="text-muted">Click to open chat</small>
+        </div>
+        <i class="bi bi-chevron-right text-muted"></i>
+    </a>
+    {% empty %}
+    <div class="p-4 text-center">No active conversations found.</div>
+    {% endfor %}
+</div>
+{% endblock %}

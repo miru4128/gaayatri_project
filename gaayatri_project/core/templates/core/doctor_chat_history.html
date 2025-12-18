@@ -1,0 +1,80 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2 class="mb-4">Farmer Chat History</h2>
+<p class="text-muted mb-4">Review every conversation GAAYATRI has handled, grouped by farmer. Cattle details come from the farmer’s latest context submission.</p>
+
+{% if session_data %}
+	{% for entry in session_data %}
+		<div class="card shadow-sm mb-3">
+			<div class="card-header bg-white">
+				<div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+					<div>
+						<h5 class="mb-1">{{ entry.farmer.get_full_name|default:entry.farmer.username }}</h5>
+						<span class="badge bg-info text-dark me-2">Farmer ID: {{ entry.farmer.id }}</span>
+						{% if entry.context.is_sick %}
+							<span class="badge bg-danger text-light">Marked sick</span>
+						{% endif %}
+						<small class="text-muted d-block">{{ entry.context_summary }}</small>
+						<div class="text-muted small mt-1 d-flex gap-3 flex-wrap">
+							<span>Session #{{ entry.session.id }}</span>
+							<span>Started: {{ entry.started_at|date:"M j, Y H:i" }}</span>
+							<span>Messages: {{ entry.message_count }}</span>
+						</div>
+					</div>
+					<div class="text-end">
+						<small class="text-muted">Last activity: {{ entry.last_message_at|date:"M j, Y H:i" }}</small>
+					</div>
+				</div>
+			</div>
+			<div class="card-body bg-light">
+				<details class="session-detail" {% if forloop.first %}open{% endif %}>
+					<summary class="fw-semibold">Show conversation details</summary>
+					<div class="mt-3 row">
+						<div class="col-md-4 mb-3">
+							<h6 class="text-uppercase text-muted small">Cattle details</h6>
+							{% if entry.cattle %}
+								<div class="alert alert-info small py-2">
+									<div class="fw-semibold">Linked herd record</div>
+									<div>{{ entry.cattle.name }} (Tag {{ entry.cattle.tag_number }})</div>
+									<div>Breed: {{ entry.cattle.breed }}</div>
+									<div>Milk yield: {{ entry.cattle.daily_milk_yield }} L/day</div>
+								</div>
+							{% endif %}
+							{% if entry.context_items %}
+								<dl class="row small">
+									{% for label, value in entry.context_items %}
+										<dt class="col-5 fw-medium">{{ label }}</dt>
+										<dd class="col-7">{{ value }}</dd>
+									{% endfor %}
+								</dl>
+							{% else %}
+								<p class="small text-muted mb-0">No specific cattle information captured for this session yet.</p>
+							{% endif %}
+						</div>
+						<div class="col-md-8">
+							<h6 class="text-uppercase text-muted small">Conversation log</h6>
+							<ul class="list-group list-group-flush">
+								{% for message in entry.messages %}
+									<li class="list-group-item">
+										<div class="d-flex justify-content-between align-items-center">
+											<span class="badge {% if message.role == 'user' %}bg-primary{% else %}bg-success{% endif %}">
+												{% if message.role == 'user' %}Farmer{% else %}GAAYATRI{% endif %}
+											</span>
+											<small class="text-muted">{{ message.created_at|date:"M j, Y H:i" }}</small>
+										</div>
+										<div class="mt-2 small">{{ message.text|linebreaksbr }}</div>
+									</li>
+								{% empty %}
+									<li class="list-group-item text-muted small">No messages recorded yet.</li>
+								{% endfor %}
+							</ul>
+						</div>
+					</div>
+				</details>
+			</div>
+		</div>
+	{% endfor %}
+{% else %}
+	<div class="alert alert-info">No farmer conversations have been recorded yet.</div>
+{% endif %}
+{% endblock %}
