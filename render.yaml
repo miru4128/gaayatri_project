@@ -1,0 +1,25 @@
+databases:
+  - name: gaayatri-db
+    plan: free
+
+services:
+  - type: web
+    name: gaayatri-app
+    env: python
+    plan: free
+    buildCommand: pip install -r requirement.txt && python manage.py collectstatic --noinput
+    startCommand: gunicorn gaayatri_project.wsgi:application
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12
+      - key: DJANGO_SETTINGS_MODULE
+        value: gaayatri_project.settings
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: gaayatri-db
+          property: connectionString

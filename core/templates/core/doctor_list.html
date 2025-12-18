@@ -1,0 +1,20 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2 class="mb-4" style="color: var(--primary-dark);">Find a Veterinarian</h2>
+<div class="row">
+    {% for doc in doctors %}
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0 h-100 text-center p-4">
+            <div class="display-1 text-muted"><i class="bi bi-person-circle"></i></div>
+            <h4 class="mt-2">{{ doc.username }}</h4>
+            <p class="text-muted">{{ doc.doctorprofile.specialization|default:"Veterinary Specialist" }}</p>
+            <a href="{% url 'chat_view' doc.id %}" class="btn btn-gaayatri mt-auto">
+                Chat & Send Photos
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <p>No doctors registered yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}

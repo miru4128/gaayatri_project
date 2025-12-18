@@ -1,0 +1,87 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'chatbot/widget.css' %}">
+<div id="gaayatri-chat-widget">
+  <div class="chat-bubble-btn" title="Open GAAYATRI chat">
+    <img src="{% static 'core/images/logo.png' %}" alt="GAAYATRI" style="width:34px;height:34px;border-radius:6px;object-fit:cover;"/>
+  </div>
+  <div class="chat-panel chat-hidden" role="dialog" aria-label="GAAYATRI Chatbot">
+    <div class="chat-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <img src="{% static 'core/images/logo.png' %}" alt="logo" style="width:36px;height:36px;border-radius:6px;object-fit:cover;"/>
+        <div style="font-weight:600;">GAAYATRI Chat</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="chat-close btn btn-sm btn-light" title="Close">✕</button>
+      </div>
+    </div>
+    <div class="chat-context-summary chat-hidden">
+      <div class="summary-text"></div>
+      <button type="button" class="chat-change-context">Change</button>
+    </div>
+    <div class="chat-context-overlay">
+      <form class="chat-context-form">
+        <h3>Tell us about your cattle</h3>
+        <p class="context-hint">Select a saved animal or enter the basic details so GAAYATRI can give precise advice.</p>
+        <div class="form-group">
+          <label for="chat-context-cattle">Choose from my herd</label>
+          <select id="chat-context-cattle" class="context-cattle-select">
+            <option value="">-- Select saved cattle --</option>
+            {% if request.user.is_authenticated %}
+              {% for cattle in request.user.cattle_set.all %}
+                <option value="{{ cattle.id }}"
+                        data-name="{{ cattle.name }}"
+                        data-tag="{{ cattle.tag_number }}"
+                        data-breed="{{ cattle.breed }}"
+                        data-age="{{ cattle.age_years }}"
+                        data-yield="{{ cattle.daily_milk_yield }}">
+                  {{ cattle.name }} (Tag {{ cattle.tag_number }})
+                </option>
+              {% endfor %}
+            {% endif %}
+          </select>
+        </div>
+        <div class="context-or">or share quick details</div>
+        <div class="form-group">
+          <label for="chat-context-name">Animal name</label>
+          <input id="chat-context-name" name="manual_name" type="text" placeholder="e.g. Gauri" />
+        </div>
+        <div class="form-group">
+          <label for="chat-context-breed">Breed</label>
+          <input id="chat-context-breed" name="manual_breed" type="text" placeholder="e.g. Gir" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="chat-context-age">Age (years)</label>
+            <input id="chat-context-age" name="manual_age" type="number" min="0" step="0.1" />
+          </div>
+          <div class="form-group">
+            <label for="chat-context-yield">Milk yield (L/day)</label>
+            <input id="chat-context-yield" name="manual_milk" type="number" min="0" step="0.1" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="chat-context-stage">Lactation stage</label>
+          <input id="chat-context-stage" name="manual_stage" type="text" placeholder="e.g. Early lactation" />
+        </div>
+        <div class="form-group">
+          <label for="chat-context-issue">Current concern</label>
+          <textarea id="chat-context-issue" name="manual_issue" rows="2" placeholder="Fever, low milk, mastitis, ration change..."></textarea>
+        </div>
+        <div class="context-error"></div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary w-100">Start chatting</button>
+        </div>
+      </form>
+    </div>
+    <div class="chat-body"></div>
+    <div class="chat-footer">
+      <input class="chat-input" placeholder="Ask about your cows, e.g. 'mastitis'" />
+      <button class="chat-send btn btn-gaayatri">Send</button>
+    </div>
+    <div class="chat-error" style="display:none;color:#c00;padding:8px;text-align:center;font-size:0.85rem;"></div>
+  </div>
+  <input type="hidden" id="gaayatri-chat-api" value="{% url 'chatbot:api' %}">
+  <form style="display:none">{% csrf_token %}</form>
+  <script>window.GAAYATRI_CHATBOT_API = document.getElementById('gaayatri-chat-api').value;</script>
+</div>
+<script src="{% static 'chatbot/widget.js' %}"></script>

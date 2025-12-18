@@ -1,0 +1,159 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2 class="mb-4">Manage My Cattle</h2>
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-3">{% if editing_cattle %}Update Cow{% else %}Add New Cow{% endif %}</h5>
+                <form method="post" class="d-grid gap-3">
+                    {% csrf_token %}
+                    {% if editing_cattle %}
+                        <input type="hidden" name="cattle_id" value="{{ editing_cattle.id }}">
+                    {% endif %}
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger py-2 mb-0">
+                            {% for error in form.non_field_errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div>
+                        <label class="form-label">Tag number</label>
+                        {{ form.tag_number }}
+                        {% if form.tag_number.errors %}
+                            <div class="text-danger small">{{ form.tag_number.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label class="form-label">Name</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <div class="text-danger small">{{ form.name.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label class="form-label">Breed</label>
+                        {{ form.breed }}
+                        {% if form.breed.errors %}
+                            <div class="text-danger small">{{ form.breed.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label class="form-label">Age (years)</label>
+                            {{ form.age_years }}
+                            {% if form.age_years.errors %}
+                                <div class="text-danger small">{{ form.age_years.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label">Daily milk yield (L)</label>
+                            {{ form.daily_milk_yield }}
+                            {% if form.daily_milk_yield.errors %}
+                                <div class="text-danger small">{{ form.daily_milk_yield.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">Last vaccination date</label>
+                        {{ form.last_vaccination_date }}
+                        {% if form.last_vaccination_date.errors %}
+                            <div class="text-danger small">{{ form.last_vaccination_date.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success flex-grow-1">
+                            {% if editing_cattle %}Save Changes{% else %}Add Cow{% endif %}
+                        </button>
+                        {% if editing_cattle %}
+                            <a href="{% url 'manage_cattle' %}" class="btn btn-outline-secondary">Cancel</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="row g-3">
+            {% for cow in cattle_list %}
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h5 class="card-title mb-1 text-capitalize">{{ cow.name }}</h5>
+                                    <span class="badge bg-secondary">Tag {{ cow.tag_number }}</span>
+                                </div>
+                                <span class="text-muted small">{{ cow.breed }}</span>
+                            </div>
+                            <ul class="list-unstyled small mb-3">
+                                <li><strong>Age:</strong> {{ cow.age_years }} years</li>
+                                <li><strong>Milk yield:</strong> {{ cow.daily_milk_yield }} L/day</li>
+                                {% if cow.last_vaccination_date %}
+                                    <li><strong>Last vaccination:</strong> {{ cow.last_vaccination_date|date:"d M Y" }}</li>
+                                {% else %}
+                                    <li class="text-muted">Last vaccination: Not recorded</li>
+                                {% endif %}
+                            </ul>
+                            <div class="mt-auto d-flex flex-wrap gap-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#cattleDetailModal{{ cow.id }}">
+                                    View details
+                                </button>
+                                <a class="btn btn-outline-primary btn-sm" href="{% url 'manage_cattle' %}?edit={{ cow.id }}">Edit</a>
+                                <form method="post" action="{% url 'manage_cattle' %}" onsubmit="return confirm('Delete {{ cow.name }}?');">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="delete_id" value="{{ cow.id }}">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info">No cattle added yet. Use the form to add your first animal.</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% for cow in cattle_list %}
+<div class="modal fade" id="cattleDetailModal{{ cow.id }}" tabindex="-1" aria-labelledby="cattleDetailLabel{{ cow.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cattleDetailLabel{{ cow.id }}">{{ cow.name }} &mdash; Tag {{ cow.tag_number }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Breed</dt>
+                    <dd class="col-sm-7">{{ cow.breed }}</dd>
+
+                    <dt class="col-sm-5">Age</dt>
+                    <dd class="col-sm-7">{{ cow.age_years }} years</dd>
+
+                    <dt class="col-sm-5">Daily milk yield</dt>
+                    <dd class="col-sm-7">{{ cow.daily_milk_yield }} L/day</dd>
+
+                    <dt class="col-sm-5">Last vaccination</dt>
+                    <dd class="col-sm-7">
+                        {% if cow.last_vaccination_date %}
+                            {{ cow.last_vaccination_date|date:"d M Y" }}
+                        {% else %}
+                            <span class="text-muted">Not recorded</span>
+                        {% endif %}
+                    </dd>
+                </dl>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <a class="btn btn-primary" href="{% url 'manage_cattle' %}?edit={{ cow.id }}">Edit details</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

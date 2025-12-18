@@ -1,0 +1,83 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="container">
+    <a href="{% url 'inventory' %}" class="text-muted mb-3 d-block text-decoration-none">&larr; Back to Inventory</a>
+    
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card p-4 shadow-lg border-0">
+                <h3 class="fw-bold" style="color: var(--primary-dark);">Update: {{ item.item_name }}</h3>
+                <h1 class="display-4 fw-bold text-success my-3">{{ item.quantity }} <span class="fs-5 text-muted">Current Stock</span></h1>
+                
+                <hr>
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <label class="fw-bold small text-muted mb-2">What action are you taking?</label>
+                    <div class="d-flex gap-3 mb-4 p-2 rounded" style="background: #f1f5f9;">
+                        {% for radio in form.action %}
+                        <div class="form-check">
+                            {{ radio.tag }}
+                            <label class="form-check-label fw-bold" for="{{ radio.id_for_label }}">
+                                {{ radio.choice_label }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="fw-bold small text-muted">Quantity</label>
+                        {{ form.quantity }}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="fw-bold small text-muted">Notes (Optional)</label>
+                        {{ form.notes }}
+                    </div>
+
+                    <button type="submit" class="btn btn-gaayatri w-100">Submit Update</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <div class="card p-4 border-0 shadow-sm h-100">
+                <h5 class="fw-bold mb-3 text-secondary">History / Usage Logs</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Action</th>
+                                <th>Qty</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in history %}
+                            <tr>
+                                <td class="small">{{ log.date|date:"M d, H:i" }}</td>
+                                <td>
+                                    {% if log.action == 'ADD' %}
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success">Added</span>
+                                    {% else %}
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger">Consumed</span>
+                                    {% endif %}
+                                </td>
+                                <td class="fw-bold">{{ log.quantity_changed }}</td>
+                                <td class="text-muted small">{{ log.notes }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">No history yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
