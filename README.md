@@ -2,6 +2,12 @@
 
 A Django-based web application for farmers and veterinary doctors to manage cattle, inventory, finances, and communicate through an AI-powered chatbot.
 
+## 🚀 Quick Deploy to Render
+
+**Ready to deploy?** See the [DEPLOYMENT.md](DEPLOYMENT.md) guide for step-by-step instructions.
+
+The repository is pre-configured with `render.yaml` for one-click deployment to Render.com.
+
 ## Features
 
 - **User Management**: Separate dashboards for farmers and doctors
@@ -64,17 +70,24 @@ python manage.py runserver
 
 ## Deployment
 
-### Render.com Deployment
+### 🚀 Deploy to Render.com
 
-This project is configured for deployment on Render.com using the `render.yaml` configuration file.
+**For complete deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md)**
+
+Quick summary:
 
 1. Push your code to GitHub
-2. Connect your GitHub repository to Render
-3. Render will automatically detect the `render.yaml` file
-4. Set the required environment variables in Render dashboard:
-   - `DJANGO_SECRET_KEY` (auto-generated)
-   - `CHATBOT_API_KEY` (your Groq API key)
-   - `DATABASE_URL` (auto-configured from database)
+2. Connect to Render using Blueprint (detects `render.yaml` automatically)
+3. Add required environment variable: `CHATBOT_API_KEY` (your Groq API key)
+4. Wait for build and deployment (~5-10 minutes first time)
+5. Create superuser via Render Shell
+6. Access your live app!
+
+This project includes:
+- ✅ `render.yaml` - Automated deployment configuration
+- ✅ `runtime.txt` - Python version specification
+- ✅ `build.sh` - Local build testing script
+- ✅ `.env.example` - Environment variables template
 
 ### Environment Variables
 
