@@ -1,3 +1,7 @@
+# Minimal requirements.txt without ML dependencies
+# Use this for faster Render deployment if you don't need semantic filtering in the chatbot
+# To use this: rename to requirements.txt before deploying
+
 Django>=4.2
 python-dotenv
 dj-database-url
@@ -7,12 +11,8 @@ Pillow         # Required for ImageField support
 groq          # Groq SDK for AI chatbot
 requests       # Used by chatbot view to call external APIs
 django-ipware       # Reliable client IP detection
+psycopg2-binary    # PostgreSQL adapter
 
-# AI/ML dependencies for chatbot semantic filtering
-# Note: These are large packages (~800MB total). Build may take 5-10 minutes on free tier.
-# If build times out, consider upgrading to Starter plan or using alternative deployment strategy.
-sentence-transformers>=2.2.2
-torch               # Required by sentence-transformers
-
-# PostgreSQL adapter for production
-psycopg2-binary
+# Note: This excludes sentence-transformers and torch to speed up deployment
+# The chatbot will still work but without semantic similarity filtering
+# To enable filtering, use the full requirements.txt instead
