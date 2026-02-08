@@ -6,7 +6,13 @@ A Django-based web application for farmers and veterinary doctors to manage catt
 
 **Ready to deploy?** See the [DEPLOYMENT.md](DEPLOYMENT.md) guide for step-by-step instructions.
 
+⚠️ **Having deployment issues?** Check [RENDER_TROUBLESHOOTING.md](RENDER_TROUBLESHOOTING.md)
+
 The repository is pre-configured with `render.yaml` for one-click deployment to Render.com.
+
+**Two deployment options:**
+- **Fast** (2-3 min): Use `requirements-minimal.txt` - all features except ML
+- **Full** (10-15 min): Use `requirements.txt` - includes ML-powered semantic filtering
 
 ## Features
 
