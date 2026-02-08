@@ -1,18 +1,27 @@
 databases:
   - name: gaayatri-db
     plan: free
+    region: oregon  # Specify region for consistency
 
 services:
   - type: web
     name: gaayatri-app
     env: python
+    region: oregon  # Same region as database for lower latency
     plan: free
-    buildCommand: pip install -r requirement.txt && python manage.py collectstatic --noinput
-    startCommand: gunicorn gaayatri_project.wsgi:application
+    # Build command: Install dependencies, run migrations, collect static files
+    # Note: Large ML dependencies (torch ~800MB) may take 5-10 minutes to install
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      python manage.py migrate --noinput
+      python manage.py collectstatic --noinput
+    # Start command: Run Gunicorn WSGI server
+    startCommand: gunicorn gaayatri_project.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
     autoDeploy: true
     envVars:
       - key: PYTHON_VERSION
-        value: 3.12
+        value: "3.12"
       - key: DJANGO_SETTINGS_MODULE
         value: gaayatri_project.settings
       - key: DJANGO_SECRET_KEY
@@ -23,3 +32,10 @@ services:
         fromDatabase:
           name: gaayatri-db
           property: connectionString
+      - key: RENDER_EXTERNAL_HOSTNAME
+        sync: false
+      # Environment variables for AI chatbot (user must provide CHATBOT_API_KEY)
+      - key: CHATBOT_EMBED_MODEL
+        value: "all-MiniLM-L6-v2"
+      - key: ALLOWED_SIMILARITY
+        value: "0.65"
