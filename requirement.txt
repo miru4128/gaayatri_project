@@ -3,6 +3,7 @@ python-dotenv
 dj-database-url
 gunicorn
 whitenoise[brotli]
+Pillow         # Required for ImageField support
 groq          # (install name depends on actual package; ensure you pip install the Groq SDK)
 requests       # used by chatbot view to call external APIs
 sentence-transformers>=2.2.2
