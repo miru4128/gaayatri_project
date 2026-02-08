@@ -2,11 +2,17 @@
 
 This guide will walk you through deploying the Gaayatri Project to Render.com.
 
+⚠️ **Important**: First deployment with ML dependencies takes **10-15 minutes**. See [RENDER_TROUBLESHOOTING.md](RENDER_TROUBLESHOOTING.md) if you encounter issues.
+
 ## Prerequisites
 
 1. A [Render.com](https://render.com) account (free tier available)
 2. A [Groq API key](https://console.groq.com) for the AI chatbot functionality
 3. Your code pushed to GitHub
+
+## Quick Start
+
+**For fastest deployment** (2-3 minutes), see [Fast Deployment Option](#fast-deployment-option) below.
 
 ## Deployment Steps
 
@@ -27,6 +33,11 @@ The repository includes a `render.yaml` file that automates the deployment:
    - `gaayatri-db`: PostgreSQL database (free tier)
    - `gaayatri-app`: Web service running your Django app
 
+⏱️ **Expected build time**: 
+- First deployment: 10-15 minutes (downloading ML libraries: torch ~800MB)
+- Subsequent deployments: 3-5 minutes (cached dependencies)
+- **Don't panic if it seems slow** - large ML dependencies take time!
+
 ### Step 3: Configure Environment Variables
 
 Render will automatically set most variables from `render.yaml`, but you need to add the chatbot API key:
@@ -38,7 +49,6 @@ Render will automatically set most variables from `render.yaml`, but you need to
 #### Required Variables:
 ```
 CHATBOT_API_KEY=<your-groq-api-key>
-GROQ_API_KEY=<your-groq-api-key>
 ```
 
 #### Optional Variables (already set by render.yaml):
@@ -88,6 +98,33 @@ python manage.py createsuperuser
 2. Admin panel: `https://gaayatri-app.onrender.com/admin/`
 3. The `RENDER_EXTERNAL_HOSTNAME` environment variable is automatically set by Render
 
+## Fast Deployment Option
+
+If you want to **deploy quickly (2-3 minutes)** and skip the ML dependencies temporarily:
+
+1. **Before deploying to Render**, switch to minimal requirements:
+   ```bash
+   mv requirements.txt requirements-full.txt
+   mv requirements-minimal.txt requirements.txt
+   git add .
+   git commit -m "Use minimal requirements for fast deployment"
+   git push
+   ```
+
+2. Deploy using the Blueprint method above
+   - Build will complete in 2-3 minutes
+   - All features work except semantic similarity filtering in chatbot
+
+3. **To enable full ML features later**:
+   ```bash
+   mv requirements.txt requirements-minimal.txt
+   mv requirements-full.txt requirements.txt
+   git add .
+   git commit -m "Switch to full requirements with ML"
+   git push
+   ```
+   - Render will auto-redeploy with ML features (10-15 min build)
+
 ## Alternative: Manual Deployment
 
 If you prefer not to use the Blueprint approach:
@@ -122,7 +159,20 @@ If you prefer not to use the Blueprint approach:
 
 ## Troubleshooting
 
-### Build Fails
+⚠️ **For detailed troubleshooting, see [RENDER_TROUBLESHOOTING.md](RENDER_TROUBLESHOOTING.md)**
+
+### Common Issues
+
+#### Build Fails or Times Out
+
+**Issue**: Deployment fails with "deploy failed" or times out
+- **Root Cause**: Large ML dependencies (torch ~800MB) take 10-15 minutes to build
+- **Solution 1**: Be patient! First build can take 10-15 minutes. Don't cancel.
+- **Solution 2**: Use `requirements-minimal.txt` for faster deployment (2-3 minutes)
+- **Solution 3**: Upgrade to Render Starter plan ($7/month) for more resources
+- **Details**: See [RENDER_TROUBLESHOOTING.md](RENDER_TROUBLESHOOTING.md)
+
+#### Build Succeeds But Deploy Fails
 
 **Issue**: "No module named 'PIL'" or similar
 - **Solution**: Ensure `Pillow` is in `requirements.txt` (already included)

@@ -4,15 +4,15 @@ dj-database-url
 gunicorn
 whitenoise[brotli]
 Pillow         # Required for ImageField support
-groq          # (install name depends on actual package; ensure you pip install the Groq SDK)
-requests       # used by chatbot view to call external APIs
-sentence-transformers>=2.2.2
-torch               # sentence-transformers backend (use CPU wheel for deployment unless GPU available)
-django-ipware       # reliable client IP detection
-# For streaming / channels:
-channels>=4.0
-channels_redis      # if you use Redis channel layer
+groq          # Groq SDK for AI chatbot
+requests       # Used by chatbot view to call external APIs
+django-ipware       # Reliable client IP detection
 
-# Optional: if you prefer to use Groq's Python SDK, install it (name may vary)
-# pip install groq
+# AI/ML dependencies for chatbot semantic filtering
+# Note: These are large packages (~800MB total). Build may take 5-10 minutes on free tier.
+# If build times out, consider upgrading to Starter plan or using alternative deployment strategy.
+sentence-transformers>=2.2.2
+torch               # Required by sentence-transformers
+
+# PostgreSQL adapter for production
 psycopg2-binary
